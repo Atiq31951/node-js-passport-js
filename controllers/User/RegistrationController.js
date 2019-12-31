@@ -1,4 +1,4 @@
-const User = require('../model/UserModel/User')
+const User = require('../../model/UserModel/User')
 const bcrypt = require('bcryptjs')
 
 // Post RegistrationController controles the post request from registration
