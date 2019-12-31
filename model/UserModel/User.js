@@ -12,7 +12,9 @@ const UserSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: false
+        required: false,
+        default: '01XXXXXXXXX',
+        unique: false
     },
     date: {
         type: Date,

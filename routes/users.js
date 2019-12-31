@@ -1,19 +1,14 @@
 const express = require('express')
 const route = express.Router()
-const UserController = require('../controllers/User/RegistrationController')
+const UserRegistrationController = require('../controllers/User/RegistrationController')
+const UserLoginController = require('../controllers/User/LoginController')
 
 // Register page
-route.get('/register', UserController.GetRegistrationController)
-// Register handler
-route.post('/register', UserController.PostRegistrationController)
+route.get('/register', UserRegistrationController.GetRegistrationController)
+route.post('/register', UserRegistrationController.PostRegistrationController)
 
 // login Page
-route.get('/login', (req, res) => {
-    res.render('login')
-})
-// Login Handler
-route.get('/login', (req, res) => {
-    res.render('login')
-})
+route.get('/login', UserLoginController.GetLoginController)
+route.post('/login', UserLoginController.PostLoginController)
 
 module.exports = route

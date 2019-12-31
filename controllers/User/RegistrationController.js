@@ -58,12 +58,14 @@ async function PostRegistrationController (req, res) {
             let hash = await bcrypt.hash(password, salt)
             newUser.password = hash
             newUser.save()
+            req.flash('success_msg', 'Thanks for registration. Please login')
             res.redirect('/user/login')
-        } catch {
+            return
+        } catch (err) {
             errorArr.push({
-                msg: 'Something Error in the server'
+                msg: 'Something Error in the server' + err
             })
-            Response.render('register', {
+            res.render('register', {
                 name,
                 email,
                 errorArr

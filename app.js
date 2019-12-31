@@ -1,7 +1,9 @@
 const express = require('express')  /// Express
 const expressLayouts = require('express-ejs-layouts') /// EJS
 const mongoose = require('mongoose') /// Mongoose
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser') /// Bodyparser
+const flash = require('connect-flash')
+const session = require('express-session')
 const path = require('path');
 const app = express()
 
@@ -10,6 +12,21 @@ const db = require('./config/keys').MongoURI
 
 // Body parser
 app.use(express.urlencoded({ extended: false }))
+
+// Express session-middleware of flash
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}))
+app.use(flash())
+
+// Global variables
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('success_msg')
+    res.locals.error_msg = req.flash('error_msg')
+    next()
+})
 
 // connect Mongo
 mongoose.connect(db, { useUnifiedTopology: true })
