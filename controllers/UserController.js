@@ -1,9 +1,10 @@
 const CommonUtils = require('../utils/common')
-const UserModel = require('../model/UserModel/User')
+const User = require('../model/UserModel/User')
 
 function PostRegistrationController (req, res) {
     let errorArr = []
     const { name, email, phone, password, password2 } = req.body
+
     // Check Required Fields
     if (!name || !email || !phone || !password || !password2) {
         errorArr.push({
@@ -46,30 +47,50 @@ function PostRegistrationController (req, res) {
             phone
         })
     } else {
-        Promise.all([UserModel.findOne({ email }), UserModel.findOne({ phone })
-        .then(users => {
-            if (users[0]) {
-                errorArr.push({
-                    msg: 'This user exists, Please use another Email.'
+        let register = true
+        User.findOne({ email })
+        .then(user => {
+            if (user) {
+                register = false
+                errors.push({ msg: 'Email already exists' })
+                res.render('register', {
+                    errors,
+                    name,
+                    email
                 })
-                errorArr,
-                name,
-                email,
-                phone
-            }
-            if (users[1]) {
-                errorArr.push({
-                    msg: 'This phone number, Please exists use another Phone.'
-                })
-                errorArr,
-                name,
-                email,
-                phone
             }
         })
-        .catch(err => {
-            console.log('Error')
+        .catch(err => console.log('Error occured'))
+
+        User.findOne({ phone })
+        .then(user => {
+            if (user) {
+                register = false
+                errors.push({ msg: 'Phone number already exists' })
+                res.render('register', {
+                    errors,
+                    name,
+                    email
+                })
+            }
         })
+        .catch(err => console.log('Error occured'))
+
+        if (!register) {
+            res.render('register', {
+                name,
+                email,
+                phone,
+                errorArr
+            })
+        } else {
+            const newUser = new User({
+                name,
+                email,
+                phone,
+                password
+            })
+        }
     }
 }
 
