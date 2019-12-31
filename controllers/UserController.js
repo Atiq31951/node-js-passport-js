@@ -1,4 +1,5 @@
 const CommonUtils = require('../utils/common')
+const UserModel = require('../model/UserModel/User')
 
 function PostRegistrationController (req, res) {
     let errorArr = []
@@ -26,7 +27,7 @@ function PostRegistrationController (req, res) {
     // Check Phone Length
     if (phone.length !== 11) {
         errorArr.push({
-            msg: 'Phone Number must be 11 charecter.'
+            msg: 'Phone Number must be exactly 11 charecter.'
         })
     }
     // Check phone number criteria
@@ -37,14 +38,38 @@ function PostRegistrationController (req, res) {
     }
 
     if (errorArr.length) {
-        res.render('register', {
+        console.log('Helllloooo')
+        res.render('register.ejs', {
             errorArr,
             name,
             email,
             phone
         })
     } else {
-        console.log('Hello')
+        Promise.all([UserModel.findOne({ email }), UserModel.findOne({ phone })
+        .then(users => {
+            if (users[0]) {
+                errorArr.push({
+                    msg: 'This user exists, Please use another Email.'
+                })
+                errorArr,
+                name,
+                email,
+                phone
+            }
+            if (users[1]) {
+                errorArr.push({
+                    msg: 'This phone number, Please exists use another Phone.'
+                })
+                errorArr,
+                name,
+                email,
+                phone
+            }
+        })
+        .catch(err => {
+            console.log('Error')
+        })
     }
 }
 

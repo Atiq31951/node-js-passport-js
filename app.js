@@ -2,6 +2,7 @@ const express = require('express')  /// Express
 const expressLayouts = require('express-ejs-layouts') /// EJS
 const mongoose = require('mongoose') /// Mongoose
 const bodyParser = require('body-parser')
+const path = require('path');
 const app = express()
 
 // DB config
@@ -16,6 +17,7 @@ mongoose.connect(db, { useNewUrlParser: true })
 .catch(err => console.log('Error occured ', err))
 
 // EJS
+app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts)
 app.set('view engine', 'ejs')
 
