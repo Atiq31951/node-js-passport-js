@@ -1,0 +1,5 @@
+<% if ( typeof errorArr !== 'undefined' && errorArr.length) {
+    errorArr.forEach(err => { %>
+        <%err.msg%>
+    <% }) %>
+<% } %>

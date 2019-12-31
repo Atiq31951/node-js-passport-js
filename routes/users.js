@@ -1,14 +1,11 @@
 const express = require('express')
 const route = express.Router()
+const UserController = require('../controllers/UserController')
 
 // Register page
-route.get('/register', (req, res) => {
-    res.render('register')
-})
+route.get('/register', UserController.GetRegistrationController)
 // Register handler
-route.post('/register', (req, res) => {
-    console.log('Hello => ', req.body)
-})
+route.post('/register', UserController.PostRegistrationController)
 
 // login Page
 route.get('/login', (req, res) => {

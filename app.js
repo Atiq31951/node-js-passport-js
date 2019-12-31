@@ -2,7 +2,6 @@ const express = require('express')  /// Express
 const expressLayouts = require('express-ejs-layouts') /// EJS
 const mongoose = require('mongoose') /// Mongoose
 const bodyParser = require('body-parser')
-
 const app = express()
 
 // DB config
@@ -23,6 +22,7 @@ app.set('view engine', 'ejs')
 // Routes
 app.use('/', require('./routes/index'))
 app.use('/user', require('./routes/users'))
+app.use('/general', require('./routes/generel'))
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, console.log('Server started on port => ', PORT))
