@@ -12,8 +12,8 @@ const db = require('./config/keys').MongoURI
 app.use(express.urlencoded({ extended: false }))
 
 // connect Mongo
-mongoose.connect(db, { useNewUrlParser: true })
-.then(() => console.log('mongodb connected'))
+mongoose.connect(db, { useUnifiedTopology: true })
+.then(() => console.log('mongodb connected.............'))
 .catch(err => console.log('Error occured ', err))
 
 // EJS

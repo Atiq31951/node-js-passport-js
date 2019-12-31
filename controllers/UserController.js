@@ -1,12 +1,13 @@
-const CommonUtils = require('../utils/common')
 const User = require('../model/UserModel/User')
+const bcrypt = require('bcryptjs')
 
-function PostRegistrationController (req, res) {
+// Post RegistrationController controles the post request from registration
+async function PostRegistrationController (req, res) {
     let errorArr = []
-    const { name, email, phone, password, password2 } = req.body
+    const { name, email, password, password2 } = req.body
 
     // Check Required Fields
-    if (!name || !email || !phone || !password || !password2) {
+    if (!name || !email || !password || !password2) {
         errorArr.push({
             msg: 'Please fill all the field.'
         })
@@ -25,71 +26,49 @@ function PostRegistrationController (req, res) {
         })
     }
 
-    // Check Phone Length
-    if (phone.length !== 11) {
-        errorArr.push({
-            msg: 'Phone Number must be exactly 11 charecter.'
-        })
-    }
-    // Check phone number criteria
-    if (phone.length === 11 && !CommonUtils.checkPhoneNumberValidity(phone)) {
-        errorArr.push({
-            msg: 'This phone number is not valid.'
-        })
-    }
-
     if (errorArr.length) {
-        console.log('Helllloooo')
-        res.render('register.ejs', {
+        res.render('register', {
             errorArr,
             name,
-            email,
-            phone
+            email
         })
+        return
     } else {
-        let register = true
-        User.findOne({ email })
-        .then(user => {
-            if (user) {
-                register = false
-                errors.push({ msg: 'Email already exists' })
-                res.render('register', {
-                    errors,
-                    name,
-                    email
+        try {
+            let emailFound = await User.findOne({ email })
+            if (emailFound) {
+                errorArr.push({
+                    msg: 'Email is already registered.'
                 })
-            }
-        })
-        .catch(err => console.log('Error occured'))
-
-        User.findOne({ phone })
-        .then(user => {
-            if (user) {
-                register = false
-                errors.push({ msg: 'Phone number already exists' })
                 res.render('register', {
-                    errors,
                     name,
-                    email
+                    email,
+                    errorArr
                 })
+                return
             }
-        })
-        .catch(err => console.log('Error occured'))
-
-        if (!register) {
-            res.render('register', {
-                name,
-                email,
-                phone,
-                errorArr
-            })
-        } else {
             const newUser = new User({
                 name,
                 email,
-                phone,
                 password
             })
+            
+            // Hash password
+            let salt = await bcrypt.genSalt(15)
+            let hash = await bcrypt.hash(password, salt)
+            newUser.password = hash
+            newUser.save()
+            res.redirect('/user/login')
+        } catch {
+            errorArr.push({
+                msg: 'Something Error in the server'
+            })
+            Response.render('register', {
+                name,
+                email,
+                errorArr
+            })
+            return
         }
     }
 }
