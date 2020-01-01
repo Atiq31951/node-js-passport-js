@@ -31,10 +31,22 @@ async function PostLoginController (req, res) {
             let emailFound = await User.findOne({ email })
             if (emailFound) {
                 // Hash password
-                let salt = await bcrypt.genSalt(15)
-                let hash = await bcrypt.hash(password, salt)
-                res.render('dashboard')
-                return
+                let pass = await bcrypt.compare(password, emailFound.password)
+                // let salt = await bcrypt.genSalt(15)
+                // let hash = await bcrypt.hash(password, salt)
+                if (pass) {
+                    res.redirect('/dashboard')
+                    return
+                } else {
+                    errorArr.push({
+                        msg: 'Wrong password.'
+                    })
+                    res.render('login', {
+                        email,
+                        errorArr
+                    })
+                    return
+                }
             } else {
                 errorArr.push({
                     msg: 'Email not found.'
@@ -46,9 +58,9 @@ async function PostLoginController (req, res) {
                 })
                 return
             }
-        } catch {
+        } catch (err) {
             errorArr.push({
-                msg: 'Something Error in the server'
+                msg: 'Something Error in the server.'
             })
             res.render('login', {
                 email,
